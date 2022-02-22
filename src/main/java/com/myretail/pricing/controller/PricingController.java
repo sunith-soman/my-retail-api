@@ -26,6 +26,17 @@ public class PricingController {
         this.pricingService = pricingService;
     }
 
+    /**
+     * Service to read the price details.
+     * Accepts product id as path parameter and returns Price details.
+     * Response codes
+     * 200 - Success
+     * 404 - If product id is not found
+     * 401 - If auth key is invalid
+     * 400 - For bad request
+     * @param productId
+     * @return ResponseEntity<Price>
+     */
     @GetMapping(value = "products/{productId}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Price> getPrice(@PathVariable("productId") Integer productId){
         ResponseEntity<Price> response = null;
@@ -43,6 +54,19 @@ public class PricingController {
         return response;
     }
 
+    /**
+     * Service to update price.
+     * Accepts product id as path parameter and a JSON payload as request body.
+     * It will return an updated representation of the resource.
+     * Response codes
+     * 200 - Success
+     * 404 - If product id is not found
+     * 401 - If auth key is invalid
+     * 400 - For bad request
+     * @param productId
+     * @param payload
+     * @return ResponseEntity<Price>
+     */
     @PutMapping(value = "products/{productId}",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Price> updatePrice(@PathVariable("productId") Integer productId,@RequestBody Price payload){
         LOGGER.debug("Product Id:"+productId);

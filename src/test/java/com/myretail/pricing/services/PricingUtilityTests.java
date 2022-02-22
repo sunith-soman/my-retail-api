@@ -19,10 +19,29 @@ public class PricingUtilityTests {
     }
 
     @Test
-    public void isValidPayload_returns_false(){
+    public void isValidPayload_zero_price_returns_false(){
         Price payload = new Price();
         Currency currency = new Currency();
         currency.setValue(0.0);
+        currency.setCode("USD");
+        payload.setCurrency(currency);
+        Assertions.assertFalse(PricingUtility.isValidPayload(payload));
+    }
+
+    @Test
+    public void isValidPayload_negative_price_returns_false(){
+        Price payload = new Price();
+        Currency currency = new Currency();
+        currency.setValue(-5.2);
+        currency.setCode("USD");
+        payload.setCurrency(currency);
+        Assertions.assertFalse(PricingUtility.isValidPayload(payload));
+    }
+
+    @Test
+    public void isValidPayload_no_price_returns_false(){
+        Price payload = new Price();
+        Currency currency = new Currency();
         currency.setCode("USD");
         payload.setCurrency(currency);
         Assertions.assertFalse(PricingUtility.isValidPayload(payload));

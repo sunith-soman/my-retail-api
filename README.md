@@ -7,8 +7,8 @@
 ### Execute tests
     mvn clean verify
 
-## Start an in-memory Cassandra instance.
-### This can be used to run the integration test class without running the build.
+### Start an in-memory Cassandra instance.
+###### This can be used to run the integration test class without running the build.
     mvn cassandra:run
 
 ## Pricing REST APIs

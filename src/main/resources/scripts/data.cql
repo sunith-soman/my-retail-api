@@ -2,7 +2,7 @@
 CREATE KEYSPACE IF NOT EXISTS my_retail WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };
 
 -- Create table
-CREATE TABLE IF NOT EXISTS my_retail.price (
+CREATE TABLE IF NOT EXISTS my_retail.product_price (
 product_id int PRIMARY KEY,
 price double,
 currency_code text,
@@ -16,16 +16,16 @@ password text
 
 
 -- Insert data
-INSERT INTO my_retail.price
+INSERT INTO my_retail.product_price
 (product_id, price, currency_code, last_update_timestamp)
 VALUES (13860428, 13.21, 'USD', toTimeStamp(now()));
-INSERT INTO my_retail.price
+INSERT INTO my_retail.product_price
 (product_id, price, currency_code, last_update_timestamp)
 VALUES (54456119, 21.56, 'USD', toTimeStamp(now()));
-INSERT INTO my_retail.price
+INSERT INTO my_retail.product_price
 (product_id, price, currency_code, last_update_timestamp)
 VALUES (13264003, 32.13, 'USD', toTimeStamp(now()));
-INSERT INTO my_retail.price
+INSERT INTO my_retail.product_price
 (product_id, price, currency_code, last_update_timestamp)
 VALUES (12954218, 11.32, 'USD', toTimeStamp(now()));
 

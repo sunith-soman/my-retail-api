@@ -3,6 +3,8 @@
 
 ### Run the app
     mvn clean spring-boot:run
+###### To specify profile
+    mvn clean spring-boot:run -Dspring-boot.run.profiles=dev
 
 ### Execute tests
     mvn clean verify

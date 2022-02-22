@@ -2,6 +2,7 @@ package com.myretail.pricing.dao;
 
 import com.myretail.pricing.dto.UserDTO;
 import com.myretail.pricing.entity.User;
+import com.myretail.pricing.utility.PricingUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.core.query.Criteria;
@@ -26,15 +27,8 @@ public class UserDaoImpl implements UserDao{
         UserDTO userDTO = null;
         User user = cassandraTemplate.selectOne(Query.query(Criteria.where("user_name").is(userName)), User.class);
         if(user!=null) {
-            userDTO = getUserDTO(user);
+            userDTO = PricingUtility.getUserDTO(user);
         }
-        return userDTO;
-    }
-
-    private UserDTO getUserDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUserName(user.getUserName());
-        userDTO.setPassword(user.getPassword());
         return userDTO;
     }
 }

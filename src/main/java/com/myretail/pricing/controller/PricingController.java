@@ -3,6 +3,7 @@ package com.myretail.pricing.controller;
 import com.myretail.pricing.exception.PricingException;
 import com.myretail.pricing.pojo.Price;
 import com.myretail.pricing.services.PricingService;
+import com.myretail.pricing.utility.PricingUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class PricingController {
                 response = ResponseEntity.ok().body(price);
             }
         } catch (PricingException exception) {
-            response = createExceptionResponse(exception);
+            response = PricingUtility.createExceptionResponse(exception);
         }
         return response;
     }
@@ -80,15 +81,8 @@ public class PricingController {
                 response = ResponseEntity.ok().body(updatedPrice);
             }
         } catch (PricingException exception) {
-            response = createExceptionResponse(exception);
+            response = PricingUtility.createExceptionResponse(exception);
         }
         return response;
-    }
-
-    private ResponseEntity<Price> createExceptionResponse(PricingException exception) {
-        if(PricingException.ErrorType.DATA_ERROR.equals(exception.getErrorType())){
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.internalServerError().build();
     }
 }

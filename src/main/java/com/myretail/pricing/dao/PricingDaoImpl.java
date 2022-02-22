@@ -2,6 +2,7 @@ package com.myretail.pricing.dao;
 
 import com.myretail.pricing.dto.PriceDTO;
 import com.myretail.pricing.entity.ProductPrice;
+import com.myretail.pricing.utility.PricingUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.core.query.Criteria;
@@ -29,7 +30,7 @@ public class PricingDaoImpl implements PricingDao{
         PriceDTO priceDTO = null;
         ProductPrice priceData = cassandraTemplate.selectOne(Query.query(Criteria.where("product_id").is(productId)), ProductPrice.class);
         if(priceData!=null) {
-            priceDTO = getPriceDTO(priceData);
+            priceDTO = PricingUtility.getPriceDTO(priceData);
         }
         return priceDTO;
     }
@@ -43,16 +44,8 @@ public class PricingDaoImpl implements PricingDao{
             priceDataExisting.setCurrencyCode(priceDTO.getCurrencyCode());
             priceDataExisting.setLastUpdateTs(Timestamp.from(Instant.now()));
             ProductPrice priceDataUpdated = cassandraTemplate.update(priceDataExisting);
-            priceDTONew = getPriceDTO(priceDataUpdated);
+            priceDTONew = PricingUtility.getPriceDTO(priceDataUpdated);
         }
         return priceDTONew;
-    }
-
-    private PriceDTO getPriceDTO(ProductPrice priceDataUpdated) {
-        PriceDTO priceDto = new PriceDTO();
-        priceDto.setProductId(priceDataUpdated.getProductId());
-        priceDto.setPrice(priceDataUpdated.getPrice());
-        priceDto.setCurrencyCode(priceDataUpdated.getCurrencyCode());
-        return priceDto;
     }
 }

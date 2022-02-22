@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myretail.pricing.dao.PricingDao;
 import com.myretail.pricing.dto.PriceDTO;
 import com.myretail.pricing.exception.PricingException;
-import com.myretail.pricing.pojo.Currency;
 import com.myretail.pricing.pojo.Price;
+import com.myretail.pricing.utility.PricingUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
-import static com.myretail.pricing.constants.PricingConstants.*;
+import static com.myretail.pricing.constants.PricingConstants.NOT_AVAILABLE;
 
 /**
  * @author Sunith Soman
@@ -59,7 +56,7 @@ public class PricingServiceImpl implements PricingService {
             throw new PricingException(exception.getMessage(), PricingException.ErrorType.SYSTEM_ERROR, exception);
         }
 
-        Price price = getPrice(productName, priceDTO);;
+        Price price = PricingUtility.getPrice(productName, priceDTO);;
         return price;
     }
 
@@ -67,7 +64,7 @@ public class PricingServiceImpl implements PricingService {
     public Price updateProductPrice(final Integer productId, final Price priceRequest) throws PricingException {
         Price priceResponse = null;
         //Validate payload
-        if(!isValidPayload(priceRequest)) {
+        if(!PricingUtility.isValidPayload(priceRequest)) {
             throw new PricingException("Bad data in request",PricingException.ErrorType.DATA_ERROR,null);
         }
         PriceDTO priceDTOReq = new PriceDTO();
@@ -76,7 +73,7 @@ public class PricingServiceImpl implements PricingService {
         priceDTOReq.setCurrencyCode(priceRequest.getCurrency().getCode());
         try {
             PriceDTO priceDTORes = pricingDao.updatePriceByProductId(priceDTOReq);
-            priceResponse = getPrice(priceRequest.getProductName(), priceDTORes);
+            priceResponse = PricingUtility.getPrice(priceRequest.getProductName(), priceDTORes);
         }
         catch(DataAccessException exception){
             throw new PricingException(exception.getMessage(),PricingException.ErrorType.DATA_ERROR,null);
@@ -104,57 +101,11 @@ public class PricingServiceImpl implements PricingService {
         if(productResponse!=null) {
             try {
                 JsonNode jsonResponseNode = objectMapper.readTree(productResponse);
-                productName = getProductName(jsonResponseNode);
+                productName = PricingUtility.getProductName(jsonResponseNode);
             } catch (JsonProcessingException e) {
                 LOGGER.error("Error while parsing product response:", e);
             }
         }
         return productName;
-    }
-
-    private Price getPrice(String productName, PriceDTO priceDTO) {
-        Price price = null;
-        if(null!=priceDTO) {
-            Currency currency = new Currency();
-            currency.setValue(priceDTO.getPrice());
-            currency.setCode(priceDTO.getCurrencyCode());
-
-            price = new Price();
-            price.setProductId(priceDTO.getProductId());
-            price.setProductName(productName);
-            price.setCurrency(currency);
-        }
-        return price;
-    }
-
-    private String getProductName(JsonNode jsonResponseNode){
-        String productName = NOT_AVAILABLE;
-        if(isValidProductJson(jsonResponseNode)){
-            productName = jsonResponseNode.get(DATA).get(PRODUCT).get(ITEM).get(PRODUCT_DESC).get(TITLE).asText();
-        }
-        return productName;
-    }
-
-    private boolean isValidProductJson(JsonNode jsonResponseNode){
-        return null!=jsonResponseNode
-                && jsonResponseNode.has(DATA) && jsonResponseNode.get(DATA).has(PRODUCT)
-                && jsonResponseNode.get(DATA).get(PRODUCT).has(ITEM)
-                && jsonResponseNode.get(DATA).get(PRODUCT).get(ITEM).has(PRODUCT_DESC)
-                && jsonResponseNode.get(DATA).get(PRODUCT).get(ITEM).get(PRODUCT_DESC).has(TITLE);
-    }
-
-    private boolean isValidPayload(Price payload) {
-        //Check for price & currency code
-        if(payload.getCurrency()!=null
-                && payload.getCurrency().getCode()!=null
-                && payload.getCurrency().getValue()!=null
-                && payload.getCurrency().getValue()>0){
-            BigDecimal price = BigDecimal.valueOf(payload.getCurrency().getValue());
-            if(price.scale()>2){
-                payload.getCurrency().setValue(price.setScale(2,RoundingMode.HALF_UP).doubleValue());
-            }
-            return true;
-        }
-        return false;
     }
 }

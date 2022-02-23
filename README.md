@@ -1,17 +1,18 @@
 # myRetail Pricing API
     This project has RESTful services for price related functionalities for myRetail org.
 
-### Run the app
-    mvn clean spring-boot:run
-###### To specify profile
+### Run the app in local
+###### Start an in-memory Cassandra instance.
+    mvn clean cassandra:run
+###### Start the app.
+    mvn spring-boot:run
+
+### Run the app in a non-local environment.
+###### This will require Cassandra DB to be configured and tables created. DB scripts are available in data.cql
     mvn clean spring-boot:run -Dspring-boot.run.profiles=dev
 
 ### Execute tests
     mvn clean verify
-
-### Start an in-memory Cassandra instance.
-###### This can be used to run the integration test class without running the build.
-    mvn cassandra:run
 
 ## Pricing REST APIs
 
